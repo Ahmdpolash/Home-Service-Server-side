@@ -51,10 +51,20 @@ async function run() {
   try {
     const serviceCollection = client.db("houseService").collection("services");
 
+    //!get all service
     app.get("/api/services", async (req, res) => {
       const result = await serviceCollection.find().toArray();
       res.send(result);
     });
+
+    //!post to collection (add service)
+    app.post("/api/services", async (req, res) => {
+      const services = req.body;
+      const result = await serviceCollection.insertOne(services);
+      res.send(result);
+    });
+
+    
 
     //!jwt
     app.post("/jwt", async (req, res) => {
