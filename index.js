@@ -11,7 +11,10 @@ require("dotenv").config();
 //!middleware ::
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "https://assignment-11-b297b.web.app",
+      "https://assignment-11-b297b.firebaseapp.com",
+    ],
     credentials: true,
   })
 );
@@ -181,7 +184,8 @@ async function run() {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: false,
+          secure: process.env.NODE_ENV === "production", // Set to true in production
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         })
         .send({ message: true });
     });
