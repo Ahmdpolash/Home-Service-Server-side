@@ -51,6 +51,7 @@ async function run() {
   try {
     const serviceCollection = client.db("houseService").collection("services");
     const bookingCollection = client.db("houseService").collection("bookings");
+    
 
     //!get all service
     app.get("/api/services", async (req, res) => {
@@ -80,16 +81,29 @@ async function run() {
       res.send(result);
     });
 
+
+    //!myservice
+
+    app.get("/api/services/:yourEmail", async (req, res) => {
+      console.log(req.query.email);
+
+      const yourEmail = req.params.yourEmail;
+
+      const result = await serviceCollection.find({ yourEmail }).toArray();
+      res.send(result);
+
+    });
+
+
     //!{email}
 
     app.get("/api/bookings/:userEmail", async (req, res) => {
       console.log(req.query.email);
-    
-      const userEmail = req.params.userEmail; 
 
-      const result = await bookingCollection.find({userEmail}).toArray();
+      const userEmail = req.params.userEmail;
+
+      const result = await bookingCollection.find({ userEmail }).toArray();
       res.send(result);
-
     });
 
     //!delete
@@ -99,8 +113,6 @@ async function run() {
       const result = await serviceCollection.deleteOne(query);
       res.send(result);
     });
-
-  
 
     //!update
     app.put("/api/services/update/:id", async (req, res) => {
