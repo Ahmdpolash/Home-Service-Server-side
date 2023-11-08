@@ -51,7 +51,6 @@ async function run() {
   try {
     const serviceCollection = client.db("houseService").collection("services");
     const bookingCollection = client.db("houseService").collection("bookings");
-    
 
     //!get all service
     app.get("/api/services", async (req, res) => {
@@ -81,7 +80,6 @@ async function run() {
       res.send(result);
     });
 
-
     //!myservice
 
     app.get("/api/services/:yourEmail", async (req, res) => {
@@ -91,9 +89,7 @@ async function run() {
 
       const result = await serviceCollection.find({ yourEmail }).toArray();
       res.send(result);
-
     });
-
 
     //!{email}
 
@@ -106,8 +102,17 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/api/pending/:userEmail", async (req, res) => {
+      console.log(req.query.email);
+
+      const providerEmail = req.params.userEmail;
+
+      const result = await bookingCollection.find({ providerEmail }).toArray();
+      res.send(result);
+    });
+
     //!delete
-    app.delete("/api/bookings/:id", async (req, res) => {
+    app.delete("/api/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await serviceCollection.deleteOne(query);
@@ -115,15 +120,15 @@ async function run() {
     });
 
     //!update
-    app.put("/api/services/update/:id", async (req, res) => {
+    app.put("/api/services/:id", async (req, res) => {
       const id = req.params.id;
       const data = req.body;
-      const filter = { id: new ObjectId(id) };
+      const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updateService = {
         $set: {
-          name: data.service_name,
-          image: data.service_image,
+          service_name: data.service_name,
+          service_image: data.service_image,
           description: data.description,
           price: data.price,
         },
@@ -133,8 +138,37 @@ async function run() {
         updateService,
         options
       );
+
       res.send(result);
     });
+
+    // app.put("/api/pending/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const data = req.body;
+    //   const filter = { _id: new ObjectId(id) };
+    //   const options = { upsert: true };
+
+    //   if (data?.status) {
+    //     const updateService = {
+    //       $set: {
+    //         serviceName: data.serviceName,
+    //         userEmail: data.service_image,
+    //         providerEmail: data.providerEmail,
+    //         status: data.status,
+    //       },
+    //     };
+
+    //     const result = await serviceCollection.updateOne(
+    //       filter,
+    //       updateService,
+    //       options
+    //     );
+
+    //     res.send(result);
+    //   } else {
+    //     res.send({});
+    //   }
+    // });
 
     //!jwt
     app.post("/jwt", async (req, res) => {
